@@ -1,0 +1,33 @@
+
+syntax = "proto3";
+
+package micro.arch.srv.user;
+
+
+service User {
+    rpc CreateUser (Request) returns (Response) {}
+    rpc QueryUser (Request) returns (Response) {}
+}
+
+message Request {
+    user user = 1;
+}
+
+message Response {
+    bool success = 1;
+    Error error = 2;
+    user user = 3;
+}
+
+message Error {
+    int32 code = 1;
+    string detail = 2;
+}
+
+message user {
+    uint32 id = 1;
+    string name = 2;
+    string avatar = 3;
+    int64 createdAt = 4;
+    int64 updatedAt = 5;
+}

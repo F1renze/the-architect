@@ -1,0 +1,27 @@
+
+syntax = "proto3";
+
+package micro.arch.srv.auth;
+
+service Auth {
+    rpc IdentifyUser(Request) returns (Response) {}
+}
+
+
+message Response {
+    bool success = 1;
+    Error error = 2;
+    uint32 userId = 3;
+}
+
+message Request {
+    uint32 AuthType = 1;
+    string AuthId = 2;
+    string Credential = 3;
+}
+
+message Error {
+    int32 code = 1;
+    string detail = 2;
+}
+
