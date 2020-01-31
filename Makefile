@@ -1,4 +1,9 @@
 
+launch_infra: ## launch micro services infrastructure
+	@sudo docker-compose -f deploy/infra.docker-compose.yml -p arch up --build
+
+launch_srv: ## launch grpc services
+	@sudo docker-compose -f deploy/srv.docker-compose.yml -p arch_srv up --build
 
 compile_proto: ## compile protobuf defintions in all services
 	@tput setaf 3;echo 'tip: plz execute next commands(for fish) when failed:\nset PATH $$HOME/go/bin $$PATH\nset PATH /usr/local/go/bin $$PATH\n'; tput setaf 2; \

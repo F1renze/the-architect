@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  user:
+    build:
+      context: ../
+      dockerfile: ./srv/user/Dockerfile
+    container_name: arch_srv_user
+    environment:
+      ARCH_CONFIG_ADDR: "config:9689"
+    restart: always
+    networks:
+      - arch_net
+
+
+networks:
+  arch_net:
+    external: true
