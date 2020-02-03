@@ -34,7 +34,8 @@ var _ server.Option
 // Client API for Auth service
 
 type AuthService interface {
-	IdentifyUser(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	AccountVerification(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	AddLoginCredential(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 }
 
 type authService struct {
@@ -55,8 +56,18 @@ func NewAuthService(name string, c client.Client) AuthService {
 	}
 }
 
-func (c *authService) IdentifyUser(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
-	req := c.c.NewRequest(c.name, "Auth.IdentifyUser", in)
+func (c *authService) AccountVerification(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Auth.AccountVerification", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authService) AddLoginCredential(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Auth.AddLoginCredential", in)
 	out := new(Response)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -68,12 +79,14 @@ func (c *authService) IdentifyUser(ctx context.Context, in *Request, opts ...cli
 // Server API for Auth service
 
 type AuthHandler interface {
-	IdentifyUser(context.Context, *Request, *Response) error
+	AccountVerification(context.Context, *Request, *Response) error
+	AddLoginCredential(context.Context, *Request, *Response) error
 }
 
 func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.HandlerOption) error {
 	type auth interface {
-		IdentifyUser(ctx context.Context, in *Request, out *Response) error
+		AccountVerification(ctx context.Context, in *Request, out *Response) error
+		AddLoginCredential(ctx context.Context, in *Request, out *Response) error
 	}
 	type Auth struct {
 		auth
@@ -86,6 +99,10 @@ type authHandler struct {
 	AuthHandler
 }
 
-func (h *authHandler) IdentifyUser(ctx context.Context, in *Request, out *Response) error {
-	return h.AuthHandler.IdentifyUser(ctx, in, out)
+func (h *authHandler) AccountVerification(ctx context.Context, in *Request, out *Response) error {
+	return h.AuthHandler.AccountVerification(ctx, in, out)
+}
+
+func (h *authHandler) AddLoginCredential(ctx context.Context, in *Request, out *Response) error {
+	return h.AuthHandler.AddLoginCredential(ctx, in, out)
 }
