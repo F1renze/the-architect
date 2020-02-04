@@ -21,7 +21,7 @@ func TestSrv(t *testing.T) {
 	if err != nil {
 		t.Fatal("create user by rpc call failed", err)
 	}
-	test.Equals(t, true, resp.Success)
+	test.AssertEqual(t, true, resp.Success)
 
 	uid := resp.User.Id
 	resp, err = userCli.QueryUser(context.TODO(), &pb.Request{
@@ -32,5 +32,5 @@ func TestSrv(t *testing.T) {
 	if err != nil {
 		t.Fatal("query user by rpc call failed", err)
 	}
-	test.Equals(t, true, resp.Success)
+	test.AssertEqual(t, true, resp.Success)
 }

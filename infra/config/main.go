@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/md5"
+	"flag"
 	"fmt"
 	"google.golang.org/grpc"
 	"net"
@@ -16,6 +17,11 @@ import (
 )
 
 func main() {
+	var (
+		mode = flag.Bool("dev", false, "decide which config will be used")
+	)
+	flag.Parse()
+
 	defer func() {
 		if r := recover(); r != nil {
 			log.WarnF("Recovered from: %v", r)
@@ -25,6 +31,11 @@ func main() {
 	log.Init()
 
 	files := []string{"config.yml"}
+	if *mode {
+		log.InfoF("working in dev mode")
+		files = []string{"config.dev.yml"}
+	}
+
 	if err := loadAndWatchConfigFile(files); err != nil {
 		log.Fatal("加载监听配置失败", err)
 	}

@@ -1,0 +1,23 @@
+arch:
+  infra:
+    jaeger:
+      addr: 127.0.0.1:6831
+    etcd:
+      host: 127.0.0.1
+      port: 2379
+    mysql:
+      host: 127.0.0.1
+      port: 3306
+      user: developer
+      password: developer
+      db_name: arch_dev
+      max_ilde_conn: 100
+      max_open_conn: 130
+
+  srv:
+    user:
+      name: micro.arch.srv.user
+      version: "1.0"
+    auth:
+      name: micro.arch.srv.auth
+      version: "1.0"

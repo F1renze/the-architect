@@ -6,19 +6,17 @@ import (
 	"testing"
 
 	"github.com/f1renze/the-architect/common"
-	"github.com/f1renze/the-architect/srv/user/model"
-	userPb "github.com/f1renze/the-architect/srv/user/proto"
+	"github.com/f1renze/the-architect/srv/auth/model"
 )
 
 var (
-	userModel model.UserModel
-	userCli   userPb.UserService
+	authModel model.AuthModel
 )
 
 func TestMain(m *testing.M) {
 	os.Setenv(constant.CfgCenterAddrEnv, "127.0.0.1:9689")
 	common.Init()
-	userModel = model.NewModel()
+	authModel = model.NewModel()
 
 	m.Run()
 }

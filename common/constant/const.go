@@ -21,3 +21,6 @@ const (
 	// TTL 决定多久后服务发现将失效的服务移除
 	RegisterTTL = time.Second * 10
 )
+
+// tracing
+

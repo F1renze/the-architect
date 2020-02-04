@@ -38,7 +38,7 @@ CREATE TABLE `identification` (
 
 LOCK TABLES `identification` WRITE;
 /*!40000 ALTER TABLE `identification` DISABLE KEYS */;
-INSERT INTO `identification` VALUES (1,'2020-01-30 21:44:13','2020-01-30 21:44:13','Mobile'),(2,'2020-01-30 21:44:13','2020-01-30 21:44:13','Email'),(3,'2020-01-30 21:44:13','2020-01-30 21:44:13','Github');
+INSERT INTO `identification` VALUES (1,'2020-02-04 18:07:16','2020-02-04 18:07:16','Mobile'),(2,'2020-02-04 18:07:16','2020-02-04 18:07:16','Email'),(3,'2020-02-04 18:07:16','2020-02-04 18:07:16','Github');
 /*!40000 ALTER TABLE `identification` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -57,7 +57,7 @@ CREATE TABLE `user` (
   `avatar` text COLLATE utf8mb4_general_ci COMMENT '头像地址',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -66,6 +66,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (1,'2020-02-04 19:41:09','2020-02-04 19:41:09','1580816469',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -85,12 +86,12 @@ CREATE TABLE `user_auth` (
   `auth_type` int(10) unsigned NOT NULL COMMENT '身份验证方式 id',
   `auth_id` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '身份验证唯一 id（如手机号/邮箱/第三方登录唯一 id）',
   `credential` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT '凭证（账户密码/第三方登录 token）',
-  `latest_login_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '最后一次使用此身份验证方式登录时间',
+  `latest_login_at` datetime DEFAULT NULL COMMENT '最后一次使用此身份验证方式登录时间',
   `ip_addr` int(10) unsigned DEFAULT NULL COMMENT '最后一次使用此身份验证方式登录时的 IP',
   PRIMARY KEY (`id`),
   UNIQUE KEY `auth_id` (`auth_id`),
   UNIQUE KEY `idx_uid_type` (`uid`,`auth_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,6 +100,7 @@ CREATE TABLE `user_auth` (
 
 LOCK TABLES `user_auth` WRITE;
 /*!40000 ALTER TABLE `user_auth` DISABLE KEYS */;
+INSERT INTO `user_auth` VALUES (1,'2020-02-04 19:41:13','2020-02-04 19:41:13',1,0,1,'13926999139','test123',NULL,NULL);
 /*!40000 ALTER TABLE `user_auth` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -111,4 +113,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-01-30 21:44:30
+-- Dump completed on 2020-02-04 19:41:35

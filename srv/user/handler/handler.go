@@ -44,6 +44,14 @@ func (h *Handler) CreateUser(ctx context.Context, req *pb.Request, resp *pb.Resp
 }
 
 func (h *Handler) QueryUser(ctx context.Context, req *pb.Request, resp *pb.Response) error {
+	if req.User == nil {
+		resp.Success = false
+		resp.Error = &pb.Error{
+			Code: 400,
+			Detail: "invalid request param",
+		}
+		return nil
+	}
 	user, err := h.model.QueryUser(req.User.Id)
 
 	if err != nil {

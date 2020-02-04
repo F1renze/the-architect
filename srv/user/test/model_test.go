@@ -15,7 +15,7 @@ func TestModel_CreateUser(t *testing.T) {
 		t.Fatal("create user failed")
 	}
 
-	test.Equals(t, name, u.Name)
+	test.AssertEqual(t, name, u.Name)
 }
 
 func TestModel_QueryUser(t *testing.T) {

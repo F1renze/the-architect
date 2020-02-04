@@ -12,7 +12,7 @@ func Assert(tb testing.TB, condition bool, format string, v ...interface{}) {
 	}
 }
 
-func Equals(tb testing.TB, exp, act interface{}) {
+func AssertEqual(tb testing.TB, exp, act interface{}) {
 	tb.Helper()
 	if !reflect.DeepEqual(exp, act) {
 		tb.Fatalf("excepted '%v', got '%v'", exp, act)

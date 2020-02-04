@@ -19,6 +19,9 @@ func InitDB() {
 
 	db.SingularTable(true)
 	db.LogMode(true)
+
+	db.DropTableIfExists(&User{}, &UserAuth{}, &Identification{})
+
 	db.AutoMigrate(&User{}, &UserAuth{}, &Identification{})
 
 	identifications := []Identification{

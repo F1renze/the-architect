@@ -29,7 +29,7 @@ type UserAuth struct {
 	AuthType uint `gorm:"not null;unique_index:idx_uid_type;comment:'身份验证方式 id'"`
 	AuthId string `gorm:"not null;unique;comment:'身份验证唯一 id（如手机号/邮箱/第三方登录唯一 id）'"`
 	Credential string `gorm:"not null;comment:'凭证（账户密码/第三方登录 token）'"`
-	LatestLoginAt time.Time `json:"-" gorm:"default:CURRENT_TIMESTAMP;comment:'最后一次使用此身份验证方式登录时间'"`
+	LatestLoginAt time.Time `json:"-" gorm:"comment:'最后一次使用此身份验证方式登录时间'"`
 	IpAddr uint32 `sql:"type:int unsigned" gorm:"comment:'最后一次使用此身份验证方式登录时的 IP'"`
 }
 

@@ -5,6 +5,7 @@ go 1.13
 replace github.com/f1renze/the-architect => ./
 
 require (
+	github.com/gin-gonic/gin v1.5.0
 	github.com/go-redis/redis v6.15.6+incompatible
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/golang/protobuf v1.3.2
@@ -12,6 +13,8 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/micro/go-micro v1.18.0
 	github.com/micro/go-plugins v1.5.1
+	github.com/micro/micro v1.18.0
 	go.uber.org/zap v1.12.0
+	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	google.golang.org/grpc v1.25.1
 )
