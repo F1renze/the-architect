@@ -34,7 +34,7 @@ var _ server.Option
 // Client API for Auth service
 
 type AuthService interface {
-	AccountVerification(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	CheckCredential(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	AddLoginCredential(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 }
 
@@ -56,8 +56,8 @@ func NewAuthService(name string, c client.Client) AuthService {
 	}
 }
 
-func (c *authService) AccountVerification(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
-	req := c.c.NewRequest(c.name, "Auth.AccountVerification", in)
+func (c *authService) CheckCredential(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Auth.CheckCredential", in)
 	out := new(Response)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -79,13 +79,13 @@ func (c *authService) AddLoginCredential(ctx context.Context, in *Request, opts 
 // Server API for Auth service
 
 type AuthHandler interface {
-	AccountVerification(context.Context, *Request, *Response) error
+	CheckCredential(context.Context, *Request, *Response) error
 	AddLoginCredential(context.Context, *Request, *Response) error
 }
 
 func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.HandlerOption) error {
 	type auth interface {
-		AccountVerification(ctx context.Context, in *Request, out *Response) error
+		CheckCredential(ctx context.Context, in *Request, out *Response) error
 		AddLoginCredential(ctx context.Context, in *Request, out *Response) error
 	}
 	type Auth struct {
@@ -99,8 +99,8 @@ type authHandler struct {
 	AuthHandler
 }
 
-func (h *authHandler) AccountVerification(ctx context.Context, in *Request, out *Response) error {
-	return h.AuthHandler.AccountVerification(ctx, in, out)
+func (h *authHandler) CheckCredential(ctx context.Context, in *Request, out *Response) error {
+	return h.AuthHandler.CheckCredential(ctx, in, out)
 }
 
 func (h *authHandler) AddLoginCredential(ctx context.Context, in *Request, out *Response) error {

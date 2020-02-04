@@ -24,3 +24,13 @@ const (
 
 // tracing
 
+
+// services
+
+const (
+	UserSrvCfgName = "srv.user"
+	UserApiCfgName = "api.user"
+
+	AuthSrvCfgName = "srv.auth"
+	AuthApiCfgName = "api.auth"
+)

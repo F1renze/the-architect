@@ -1,7 +1,9 @@
 package test
 
 import (
+	"database/sql"
 	"fmt"
+	"github.com/f1renze/the-architect/common/errno"
 	"github.com/f1renze/the-architect/test"
 	"testing"
 
@@ -9,12 +11,27 @@ import (
 )
 
 func TestAuthModel(t *testing.T) {
-	tc := []*pb.AuthInfo{
+	tc := []struct {
+		pb.AuthInfo
+		err error
+	}{
 		{
-			Uid:        1,
-			AuthType:   pb.AuthType_Mobile,
-			AuthId:     "13926999139",
-			Credential: "test123",
+			pb.AuthInfo{
+				Uid:        1,
+				AuthType:   pb.AuthType_Mobile,
+				AuthId:     "13926799139",
+				Credential: "test123",
+			},
+			errno.AuthTypeAlreadyBind,
+		},
+		{
+			pb.AuthInfo{
+				Uid:        2,
+				AuthType:   pb.AuthType_Mobile,
+				AuthId:     "13926799139",
+				Credential: "test123",
+			},
+			errno.AuthIdAlreadyUsed,
 		},
 	}
 
@@ -24,17 +41,20 @@ func TestAuthModel(t *testing.T) {
 	)
 
 	for i := range tc {
-		_, err = authModel.CreateCredential(tc[i])
-		if err != nil {
-			fmt.Println(err)
-			//t.Fatal("create credential failed")
+		_, err = authModel.CreateCredential(&tc[i].AuthInfo)
+		if err != nil && err != tc[i].err {
+			t.Fatal("create credential failed:", err)
 		}
 		info, err = authModel.QueryCredential(tc[i].AuthType, tc[i].AuthId, tc[i].Credential)
 		if err != nil {
-			fmt.Println(err)
-			t.Fatal("query failed")
+			t.Fatal("query failed", err, tc[i], err == sql.ErrNoRows)
 		}
+		// mysql tinyint(1) 直接转换为 bool
+		fmt.Println("verified", info.Verified)
 		test.AssertEqual(t, tc[i].Uid, info.Uid)
+		err = authModel.RefreshLoginTime(info.Id, "127.0.0.1")
+		if err != nil {
+			t.Fatal("refresh login time failed")
+		}
 	}
 }
-

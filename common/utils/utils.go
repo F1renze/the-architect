@@ -2,6 +2,7 @@ package utils
 
 import (
 	"database/sql"
+	"github.com/go-sql-driver/mysql"
 	"regexp"
 )
 
@@ -25,6 +26,14 @@ func CheckNullString(s string) sql.NullString {
 		String: s,
 		Valid:  true,
 	}
+}
+
+func IskMySQLError(err error, errNum int) bool {
+	mysqlErr, ok := err.(*mysql.MySQLError)
+	if !ok {
+		return ok
+	}
+	return mysqlErr.Number == uint16(errNum)
 }
 
 func NoErrors(errs ...error) error {

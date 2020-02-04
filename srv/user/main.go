@@ -12,12 +12,11 @@ import (
 	"github.com/micro/go-micro/registry/etcd"
 )
 
-const srvName = "srv.user"
 
 func main() {
 	cmsCli := common.Init()
 
-	srvCfg, err := config.GetSrvConfig(srvName, cmsCli)
+	srvCfg, err := config.GetSrvConfig(constant.UserSrvCfgName, cmsCli)
 	if err != nil {
 		log.Fatal("获取服务配置失败", err)
 	}

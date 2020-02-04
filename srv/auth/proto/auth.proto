@@ -4,18 +4,18 @@ syntax = "proto3";
 package micro.arch.srv.auth;
 
 service Auth {
-    rpc AccountVerification(Request) returns (Response) {}
+    rpc CheckCredential(Request) returns (Response) {}
     rpc AddLoginCredential(Request) returns (Response) {}
 }
 
 message Response {
     bool success = 1;
     Error error = 3;
-    AuthInfo info = 5;
 }
 
 message Request {
     AuthInfo info = 1;
+    bool login = 3;
 }
 
 message Error {
@@ -30,15 +30,16 @@ enum AuthType {
 }
 
 message AuthInfo {
-    uint32 uid = 1;
-    bool verified = 2;
+    uint32 id = 1;
+    uint32 uid = 3;
+    bool verified = 5;
     // use email as default auth type
-    AuthType authType = 3;
-    string authId = 5;
-    string credential = 7;
-    int64 latestLoginAt = 8;
-    string ipAddr = 9;
-    int64 createdAt = 11;
-    int64 updatedAt = 13;
+    AuthType authType = 7;
+    string authId = 9;
+    string credential = 11;
+    int64 latestLoginAt = 13;
+    string ipAddr = 15;
+    int64 createdAt = 17;
+    int64 updatedAt = 19;
 }
 
