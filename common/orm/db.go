@@ -34,5 +34,3 @@ func InitDB() {
 		db.Create(&identifications[i])
 	}
 }
-
-

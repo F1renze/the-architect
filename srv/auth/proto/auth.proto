@@ -35,7 +35,8 @@ message AuthInfo {
     bool verified = 5;
     // use email as default auth type
     AuthType authType = 7;
-    string authId = 9;
+    // todo auth id json_name issue
+    string authId = 9 [json_name="auth_id"];
     string credential = 11;
     int64 latestLoginAt = 13;
     string ipAddr = 15;

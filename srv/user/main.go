@@ -12,7 +12,6 @@ import (
 	"github.com/micro/go-micro/registry/etcd"
 )
 
-
 func main() {
 	cmsCli := common.Init()
 

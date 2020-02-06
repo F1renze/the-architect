@@ -3,14 +3,13 @@ package utils
 import "testing"
 
 func TestValidateMobile(t *testing.T) {
-	tc := []struct{
+	tc := []struct {
 		Num string
-		OK bool
+		OK  bool
 	}{
 		{
 			"12334545761",
 			false,
-
 		},
 		{
 			"13926999139",
@@ -27,9 +26,9 @@ func TestValidateMobile(t *testing.T) {
 }
 
 func TestValidateEmailFormat(t *testing.T) {
-	tc := []struct{
+	tc := []struct {
 		Addr string
-		OK bool
+		OK   bool
 	}{
 		{
 			"ç$€§/az@gmail.com",

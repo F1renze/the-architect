@@ -3,12 +3,17 @@ package errno
 import "fmt"
 
 type Errno struct {
-	Code int
+	Code    int
 	Message string
 }
 
 func (e *Errno) Error() string {
 	return e.Message
+}
+
+func (e *Errno) Add(msg string) error {
+	e.Message += " " + msg
+	return e
 }
 
 func (e *Errno) With(err error) error {
@@ -17,7 +22,7 @@ func (e *Errno) With(err error) error {
 
 func newCode(code int, msg string) *Errno {
 	return &Errno{
-		Code: code,
+		Code:    code,
 		Message: msg,
 	}
 }

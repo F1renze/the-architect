@@ -9,10 +9,9 @@ const (
 
 // config center
 const (
-	CfgPrefix = "arch"
+	CfgPrefix        = "arch"
 	CfgCenterAddrEnv = "ARCH_CONFIG_ADDR"
 )
-
 
 // micro
 const (
@@ -23,7 +22,6 @@ const (
 )
 
 // tracing
-
 
 // services
 

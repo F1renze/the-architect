@@ -41,10 +41,14 @@ func TestAuthModel(t *testing.T) {
 	)
 
 	for i := range tc {
+		t.Logf("test case %d", i)
 		_, err = authModel.CreateCredential(&tc[i].AuthInfo)
 		if err != nil && err != tc[i].err {
 			t.Fatal("create credential failed:", err)
+		} else if err != nil {
+			continue
 		}
+
 		info, err = authModel.QueryCredential(tc[i].AuthType, tc[i].AuthId, tc[i].Credential)
 		if err != nil {
 			t.Fatal("query failed", err, tc[i], err == sql.ErrNoRows)

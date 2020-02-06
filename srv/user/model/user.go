@@ -1,6 +1,9 @@
 package model
 
 import (
+	"database/sql"
+	"github.com/f1renze/the-architect/common/errno"
+	"github.com/f1renze/the-architect/common/utils/log"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/f1renze/the-architect/common/infra/db"
@@ -26,7 +29,7 @@ type model struct {
 func (m *model) CreateUser(name, avatar string) (*pb.User, error) {
 
 	if len(name) < 1 && len(avatar) < 1 {
-		return nil, EmptyUserNameErr
+		return nil, errno.InvalidUserName
 	}
 
 	r, err := m.db.Exec(
@@ -34,7 +37,11 @@ func (m *model) CreateUser(name, avatar string) (*pb.User, error) {
 		name, utils.CheckNullString(avatar),
 	)
 	if err != nil {
-		return nil, err
+		if utils.IskMySQLError(err, errno.MySQLDupEntryErrNo) {
+			return nil, errno.UserNameAlreadyUsed
+		}
+		log.ErrorF("user model: create user failed, %s", err)
+		return nil, errno.DBErr.With(err)
 	}
 
 	id, _ := r.LastInsertId()
@@ -48,5 +55,12 @@ func (m *model) QueryUser(id uint32) (user *pb.User, err error) {
 	user = new(pb.User)
 
 	err = m.db.Get(user, query, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errno.RecordNotExists
+		}
+		log.ErrorF("user model: query user error, %s", err)
+		return nil, errno.DBErr.With(err)
+	}
 	return
 }

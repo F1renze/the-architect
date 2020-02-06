@@ -11,7 +11,6 @@ import (
 	"github.com/f1renze/the-architect/common/infra/db"
 )
 
-
 var (
 	once sync.Once
 	etcd *EtcdConfig
@@ -31,7 +30,7 @@ func Init(cmsCli config.CMSClient) {
 
 type EtcdConfig struct {
 	Host string `json:"host"`
-	Port int `json:"port"`
+	Port int    `json:"port"`
 }
 
 func GetRegistryOptions() func(*registry.Options) {

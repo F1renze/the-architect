@@ -82,7 +82,8 @@ func (m *model) CreateCredential(authInfo *pb.AuthInfo) (int64, error) {
 			ok, err := m.CheckAuthTypeAlreadyBind(uid, authType)
 			if ok && err == nil {
 				return -1, errno.AuthTypeAlreadyBind
-			} else if err == nil {
+				// 若当前 uid 未绑定此登录方式则该 auth id 被他人绑定
+			} else if err == sql.ErrNoRows {
 				return -1, errno.AuthIdAlreadyUsed
 			}
 		}
@@ -94,7 +95,7 @@ func (m *model) CreateCredential(authInfo *pb.AuthInfo) (int64, error) {
 	return id, nil
 }
 
-func (m *model) GetAuthInfoByAuthId(authType pb.AuthType, authId string) (*pb.AuthInfo, error){
+func (m *model) GetAuthInfoByAuthId(authType pb.AuthType, authId string) (*pb.AuthInfo, error) {
 	if !ValidateAuthId(authType, authId) {
 		return nil, errno.InvalidAuthInfo
 	}
@@ -107,9 +108,11 @@ func (m *model) GetAuthInfoByAuthId(authType pb.AuthType, authId string) (*pb.Au
 }
 
 func (m *model) CheckAuthTypeAlreadyBind(uid uint32, authType pb.AuthType) (bool, error) {
-	query := "SELECT auth_id, verified FROM `user_auth` WHERE auth_type = ? AND uid = ?"
+	// todo auth id json_name issue
+	query := "SELECT id, verified FROM `user_auth` WHERE auth_type = ? AND uid = ?"
 
-	_, err := m.db.Query(query, authType, uid)
+	authInfo := &pb.AuthInfo{}
+	err := m.db.Get(authInfo, query, authType, uid)
 	return err != sql.ErrNoRows, err
 }
 

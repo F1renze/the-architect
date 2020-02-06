@@ -2,10 +2,8 @@ package handler
 
 import (
 	"context"
-	"database/sql"
+
 	"github.com/f1renze/the-architect/common/errno"
-	"github.com/f1renze/the-architect/common/utils"
-	"github.com/f1renze/the-architect/common/utils/log"
 	"github.com/f1renze/the-architect/srv/user/model"
 	pb "github.com/f1renze/the-architect/srv/user/proto"
 )
@@ -22,57 +20,33 @@ type Handler struct {
 
 func (h *Handler) CreateUser(ctx context.Context, req *pb.Request, resp *pb.Response) error {
 	user, err := h.model.CreateUser(req.User.Name, req.User.Avatar)
-	if err == nil {
-		resp.Success = true
-		resp.User = user
+
+	if err != nil {
+		resp.Success = false
+		resp.Error = new(pb.Error)
+		resp.Error.Code, resp.Error.Detail = errno.DecodeInt32Err(err)
 		return nil
 	}
 
-	resp.Success = false
-	resp.Error = &pb.Error{
-		Detail: err.Error(),
-	}
-
-	if model.IsEmptyUserNameErr(err) {
-		resp.Error.Code = 400
-	} else if utils.IskMySQLError(err, errno.MySQLDupEntryErr) {
-		resp.Error.Code = errno.MySQLDupEntryErr
-	} else {
-		resp.Error.Code = 500
-		log.Error("user srv: create user failed", log.Any{
-			"error": err,
-			"req": req,
-		})
-	}
-	return err
+	resp.Success = true
+	resp.User = user
+	return nil
 }
 
 func (h *Handler) QueryUser(ctx context.Context, req *pb.Request, resp *pb.Response) error {
 	if req.User == nil {
 		resp.Success = false
-		resp.Error = &pb.Error{
-			Code: 400,
-			Detail: "invalid request param",
-		}
+		resp.Error = new(pb.Error)
+		resp.Error.Code, resp.Error.Detail = errno.DecodeInt32Err(errno.UidIsNull)
 		return nil
 	}
 	user, err := h.model.QueryUser(req.User.Id)
 
 	if err != nil {
 		resp.Success = false
-		resp.Error = &pb.Error{
-			Code: 500,
-			Detail: err.Error(),
-		}
-		if err == sql.ErrNoRows {
-			resp.Error.Code = 400
-		} else {
-			log.Error("query user failed", log.Any{
-				"error": err,
-				"uid": req.User.Id,
-			})
-		}
-		return err
+		resp.Error = new(pb.Error)
+		resp.Error.Code, resp.Error.Detail = errno.DecodeInt32Err(err)
+		return nil
 	}
 
 	resp.User = user

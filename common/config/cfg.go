@@ -1,13 +1,12 @@
 package config
 
-
 type ServiceConfig struct {
-	Name string `json:"name"`
+	Name    string `json:"name"`
 	Version string `json:"version"`
 }
 
 type WebConfig struct {
-	Name string `json:"name"`
+	Name    string `json:"name"`
 	Version string `json:"version"`
 	Address string `json:"address"`
 }

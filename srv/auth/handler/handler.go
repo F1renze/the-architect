@@ -21,8 +21,9 @@ func (h *Handler) AddLoginCredential(ctx context.Context, req *pb.Request, resp 
 	_, err := h.model.CreateCredential(req.Info)
 	if err != nil {
 		resp.Success = false
+		resp.Error = new(pb.Error)
 		resp.Error.Code, resp.Error.Detail = errno.DecodeInt32Err(err)
-		return err
+		return nil
 	}
 
 	resp.Success = true
@@ -34,8 +35,9 @@ func (h *Handler) CheckCredential(ctx context.Context, req *pb.Request, resp *pb
 	authInfo, err := h.model.QueryCredential(req.Info.AuthType, req.Info.AuthId, req.Info.Credential)
 	if err != nil {
 		resp.Success = false
+		resp.Error = new(pb.Error)
 		resp.Error.Code, resp.Error.Detail = errno.DecodeInt32Err(err)
-		return err
+		return nil
 	}
 	// todo verify 留 api 层处理
 

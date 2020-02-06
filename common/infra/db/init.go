@@ -8,7 +8,6 @@ import (
 	"github.com/f1renze/the-architect/common/config"
 )
 
-
 var (
 	db   *sqlx.DB
 	once sync.Once

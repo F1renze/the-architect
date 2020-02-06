@@ -26,12 +26,6 @@ func initMysql(cmsCli config.CMSClient) {
 		log.Fatal("获取 mysql 配置失败", err)
 	}
 
-	// TODO delete
-	//cfgCenterAddr := os.Getenv(constant.CfgCenterAddrEnv)
-	//if strings.HasPrefix(cfgCenterAddr, "127.0.0.1") {
-	//	cfg.Host = "127.0.0.1"
-	//}
-
 	url := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=%t&loc=%s",
 		cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, true, "Local",
 	)
