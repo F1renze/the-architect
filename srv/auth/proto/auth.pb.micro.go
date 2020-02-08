@@ -5,6 +5,7 @@ package micro_arch_srv_auth
 
 import (
 	fmt "fmt"
+	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/golang/protobuf/proto"
 	math "math"
 )

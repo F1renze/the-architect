@@ -2,8 +2,8 @@ package test
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/f1renze/the-architect/common/errno"
+	db2 "github.com/f1renze/the-architect/common/infra/db"
 	"github.com/f1renze/the-architect/test"
 	"testing"
 
@@ -39,23 +39,27 @@ func TestAuthModel(t *testing.T) {
 		err  error
 		info *pb.AuthInfo
 	)
-
+	db := db2.GetDB()
+	db.Exec("DELETE FROM `user_auth` where auth_id = ?", tc[0].AuthInfo.AuthId)
 	for i := range tc {
 		t.Logf("test case %d", i)
 		_, err = authModel.CreateCredential(&tc[i].AuthInfo)
 		if err != nil && err != tc[i].err {
 			t.Fatal("create credential failed:", err)
-		} else if err != nil {
+		} else if err != nil && err == tc[i].err{
+			t.Logf("err: %s", err)
 			continue
 		}
 
-		info, err = authModel.QueryCredential(tc[i].AuthType, tc[i].AuthId, tc[i].Credential)
+		info, err = authModel.QueryCredential(tc[i].AuthId, tc[i].Credential)
 		if err != nil {
 			t.Fatal("query failed", err, tc[i], err == sql.ErrNoRows)
 		}
 		// mysql tinyint(1) 直接转换为 bool
-		fmt.Println("verified", info.Verified)
+		t.Logf("verified: %v", info.Verified)
 		test.AssertEqual(t, tc[i].Uid, info.Uid)
+		test.AssertEqual(t, tc[i].AuthType, info.AuthType)
+
 		err = authModel.RefreshLoginTime(info.Id, "127.0.0.1")
 		if err != nil {
 			t.Fatal("refresh login time failed")

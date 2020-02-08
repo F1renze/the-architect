@@ -32,7 +32,7 @@ func (h *Handler) AddLoginCredential(ctx context.Context, req *pb.Request, resp 
 
 func (h *Handler) CheckCredential(ctx context.Context, req *pb.Request, resp *pb.Response) error {
 
-	authInfo, err := h.model.QueryCredential(req.Info.AuthType, req.Info.AuthId, req.Info.Credential)
+	authInfo, err := h.model.QueryCredential(req.Info.AuthId, req.Info.Credential)
 	if err != nil {
 		resp.Success = false
 		resp.Error = new(pb.Error)

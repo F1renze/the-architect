@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/registry/etcd"
@@ -12,11 +13,19 @@ import (
 	"github.com/f1renze/the-architect/common/constant"
 	"github.com/f1renze/the-architect/common/errno"
 	"github.com/f1renze/the-architect/common/infra"
-	"github.com/f1renze/the-architect/common/utils"
 	"github.com/f1renze/the-architect/common/utils/log"
 	authPb "github.com/f1renze/the-architect/srv/auth/proto"
 	userPb "github.com/f1renze/the-architect/srv/user/proto"
 )
+
+func init() {
+	govalidator.CustomTypeTagMap.Set("pwdeq", func(i interface{}, o interface{}) bool {
+		if i.(string) == o.(RegisterForm).Pwd {
+			return true
+		}
+		return false
+	})
+}
 
 type UserApi interface {
 	Login(*gin.Context)
@@ -46,54 +55,100 @@ type Handler struct {
 	authCli authPb.AuthService
 }
 
-func (h *Handler) Login(c *gin.Context) {
-	// todo validate
+type LoginForm struct {
+	AuthId string `form:"auth_id" binding:"required" valid:"stringlength(6|255)"`
+	Credential string `form:"credential" binding:"required" valid:"stringlength(6|255)"`
 }
 
+func (h *Handler) Login(c *gin.Context) {
+	var form LoginForm
+	err := c.ShouldBind(&form)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"code": -1,
+			"msg": "表单字段不可为空",
+		})
+		return
+	}
+
+	_, err = govalidator.ValidateStruct(form)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"code": -1,
+			"msg": err.Error(),
+		})
+		return
+	}
+
+	ctx := context.TODO()
+	resp, err := h.authCli.CheckCredential(ctx, &authPb.Request{
+		Login: true,
+		Info: &authPb.AuthInfo{
+			AuthId: form.AuthId,
+			Credential: form.Credential,
+		},
+	})
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"code": errno.RemoteServiceErr.Code,
+			"msg": errno.RemoteServiceErr.Message,
+		})
+		log.ErrorF("api.user.login: call auth srv failed, %s", err)
+		return
+	}
+	if !resp.Success {
+		c.AbortWithStatusJSON(http.StatusOK, gin.H{
+			"code": resp.Error.Code,
+			"msg": resp.Error.Detail,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": errno.OK.Code,
+		"msg": errno.OK.Message,
+	})
+}
+
+// 注销 token
 func (h *Handler) Logout(c *gin.Context) {
 
 }
 
+type RegisterForm struct {
+	Name string `form:"username" binding:"required" valid:"stringlength(1|32)"`
+	Email string `form:"email" binding:"required" valid:"email"`
+	Pwd string `form:"password" binding:"required" valid:"stringlength(6|255)"`
+	ConfirmPwd string `form:"confirm_password" binding:"required" valid:"pwdeq"`
+}
+
 func (h *Handler) Register(c *gin.Context) {
-	username := c.PostForm("username")
-	// using email as default auth type
-	email := c.PostForm("email")
-	pwd := c.PostForm("password")
-	confirmPwd := c.PostForm("confirm_password")
+	var form RegisterForm
+	err := c.ShouldBind(&form)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"code": -1,
+			"msg": "表单字段不可为空",
+		})
+		return
+	}
 
-	body := gin.H{}
-	body["code"], body["msg"] = errno.DecodeInt32Err(errno.OK)
-
-	switch {
-	case !utils.ValidateEmailFormat(email):
-		err := errno.InvalidEmail.Add(`"` + email + `"`)
-		body["code"], body["msg"] = errno.DecodeInt32Err(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, body)
+	_, err = govalidator.ValidateStruct(form)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"code": -1,
+			"msg": err.Error(),
+		})
 		return
-	case pwd == "":
-		body["msg"] = "密码不可为空"
-		c.AbortWithStatusJSON(http.StatusBadRequest, body)
-		return
-	case pwd != confirmPwd:
-		body["msg"] = "两次密码不一致"
-		c.AbortWithStatusJSON(http.StatusBadRequest, body)
-		return
-	case username == "":
-		body["code"], body["msg"] = errno.DecodeInt32Err(errno.InvalidUserName)
-		c.AbortWithStatusJSON(http.StatusBadRequest, body)
-		return
-	default:
 	}
 
 	ctx := context.TODO()
-	req := &userPb.Request{
+	resp, err := h.userCli.CreateUser(ctx, &userPb.Request{
 		User: &userPb.User{
-			Name: username,
+			Name: form.Name,
 		},
-	}
-	resp, err := h.userCli.CreateUser(ctx, req)
+	})
 	if err != nil {
-
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"code": errno.RemoteServiceErr.Code,
 			"msg":  errno.RemoteServiceErr.Message,
@@ -114,8 +169,8 @@ func (h *Handler) Register(c *gin.Context) {
 		Info: &authPb.AuthInfo{
 			Uid:        resp.User.Id,
 			AuthType:   authPb.AuthType_Email,
-			AuthId:     email,
-			Credential: pwd,
+			AuthId:     form.Email,
+			Credential: form.Pwd,
 		},
 	})
 	if err != nil {
@@ -123,7 +178,7 @@ func (h *Handler) Register(c *gin.Context) {
 			"code": errno.RemoteServiceErr.Code,
 			"msg":  errno.RemoteServiceErr.Message,
 		})
-		log.ErrorF("call auth srv failed, %s", err)
+		log.ErrorF("api.user.register: call auth srv failed, %s", err)
 		return
 	}
 	if !authResp.Success {

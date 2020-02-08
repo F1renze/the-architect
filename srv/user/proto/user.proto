@@ -3,6 +3,7 @@ syntax = "proto3";
 
 package micro.arch.srv.user;
 
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 service User {
     rpc CreateUser (Request) returns (Response) {}
@@ -26,8 +27,8 @@ message Error {
 
 message user {
     uint32 id = 1;
-    string name = 2;
-    string avatar = 3;
-    int64 createdAt = 4;
-    int64 updatedAt = 5;
+    string name = 2 [(gogoproto.moretags) = "valid:stringlength(1|32),required"];
+    string avatar = 3 [(gogoproto.moretags) = "valid:url"];
+    int64 createdAt = 4 [(gogoproto.jsontag) = "created_at"];
+    int64 updatedAt = 5 [(gogoproto.jsontag) = "updated_at"];
 }

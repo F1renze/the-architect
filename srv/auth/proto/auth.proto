@@ -3,6 +3,8 @@ syntax = "proto3";
 
 package micro.arch.srv.auth;
 
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
 service Auth {
     rpc CheckCredential(Request) returns (Response) {}
     rpc AddLoginCredential(Request) returns (Response) {}
@@ -14,7 +16,7 @@ message Response {
 }
 
 message Request {
-    AuthInfo info = 1;
+    AuthInfo info = 1 [(gogoproto.jsontag) = "auth_info"];
     bool login = 3;
 }
 
@@ -34,13 +36,12 @@ message AuthInfo {
     uint32 uid = 3;
     bool verified = 5;
     // use email as default auth type
-    AuthType authType = 7;
-    // todo auth id json_name issue
-    string authId = 9 [json_name="auth_id"];
+    AuthType authType = 7 [(gogoproto.jsontag) = "auth_type", (gogoproto.moretags) = "db:\"auth_type\""];
+    string authId = 9 [(gogoproto.jsontag) = "auth_id", (gogoproto.moretags) = "db:\"auth_id\""];
     string credential = 11;
-    int64 latestLoginAt = 13;
-    string ipAddr = 15;
-    int64 createdAt = 17;
-    int64 updatedAt = 19;
+    int64 latestLoginAt = 13 [(gogoproto.jsontag) = "latest_login_at"];
+    string ipAddr = 15 [(gogoproto.jsontag) = "ip_addr"];
+    int64 createdAt = 17 [(gogoproto.jsontag) = "created_at"];
+    int64 updatedAt = 19 [(gogoproto.jsontag) = "updated_at"];
 }
 

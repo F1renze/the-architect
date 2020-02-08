@@ -9,7 +9,7 @@ compile_proto: ## compile protobuf defintions in all services
 	@tput setaf 3;echo 'tip: plz execute next commands(for fish) when failed:\nset PATH $$HOME/go/bin $$PATH\nset PATH /usr/local/go/bin $$PATH\n'; tput setaf 2; \
 	for d in srv; do \
 		for f in $$d/**/proto/*.proto; do \
-			protoc -I=. --micro_out=. --go_out=. $$f; \
+			protoc -I=. -I=${HOME}/go/src --micro_out=. --gogo_out=. $$f; \
 			echo compiled: $$f; \
 		done \
 	done; \

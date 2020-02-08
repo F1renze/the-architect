@@ -14,7 +14,7 @@ import (
 )
 
 type AuthModel interface {
-	QueryCredential(authType pb.AuthType, authId, credential string) (*pb.AuthInfo, error)
+	QueryCredential(authId, credential string) (*pb.AuthInfo, error)
 	CreateCredential(authInfo *pb.AuthInfo) (int64, error)
 	RefreshLoginTime(id uint32, ip string) error
 }
@@ -39,8 +39,12 @@ func (m *model) RefreshLoginTime(id uint32, ip string) error {
 	return nil
 }
 
-func (m *model) QueryCredential(authType pb.AuthType, authId, credential string) (*pb.AuthInfo, error) {
-	authInfo, err := m.GetAuthInfoByAuthId(authType, authId)
+func (m *model) QueryCredential(authId, credential string) (*pb.AuthInfo, error) {
+
+	query := "SELECT id, uid, verified, auth_type, credential FROM `user_auth` WHERE auth_id = ?"
+
+	authInfo := new(pb.AuthInfo)
+	err := m.db.Get(authInfo, query, authId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errno.RecordNotExists
@@ -48,6 +52,7 @@ func (m *model) QueryCredential(authType pb.AuthType, authId, credential string)
 		log.ErrorF("auth model: query credential failed, %s", err)
 		return nil, errno.DBErr.With(err)
 	}
+
 	err = bcrypt.CompareHashAndPassword([]byte(authInfo.Credential), []byte(credential))
 	if err != nil {
 		if err == bcrypt.ErrMismatchedHashAndPassword {
@@ -108,8 +113,7 @@ func (m *model) GetAuthInfoByAuthId(authType pb.AuthType, authId string) (*pb.Au
 }
 
 func (m *model) CheckAuthTypeAlreadyBind(uid uint32, authType pb.AuthType) (bool, error) {
-	// todo auth id json_name issue
-	query := "SELECT id, verified FROM `user_auth` WHERE auth_type = ? AND uid = ?"
+	query := "SELECT auth_id, verified FROM `user_auth` WHERE auth_type = ? AND uid = ?"
 
 	authInfo := &pb.AuthInfo{}
 	err := m.db.Get(authInfo, query, authType, uid)
