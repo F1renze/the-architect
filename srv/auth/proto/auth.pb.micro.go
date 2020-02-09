@@ -37,6 +37,9 @@ var _ server.Option
 type AuthService interface {
 	CheckCredential(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	AddLoginCredential(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	VerifyToken(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	SignOff(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	SignOn(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 }
 
 type authService struct {
@@ -77,17 +80,53 @@ func (c *authService) AddLoginCredential(ctx context.Context, in *Request, opts 
 	return out, nil
 }
 
+func (c *authService) VerifyToken(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Auth.VerifyToken", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authService) SignOff(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Auth.SignOff", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authService) SignOn(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Auth.SignOn", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Auth service
 
 type AuthHandler interface {
 	CheckCredential(context.Context, *Request, *Response) error
 	AddLoginCredential(context.Context, *Request, *Response) error
+	VerifyToken(context.Context, *Request, *Response) error
+	SignOff(context.Context, *Request, *Response) error
+	SignOn(context.Context, *Request, *Response) error
 }
 
 func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.HandlerOption) error {
 	type auth interface {
 		CheckCredential(ctx context.Context, in *Request, out *Response) error
 		AddLoginCredential(ctx context.Context, in *Request, out *Response) error
+		VerifyToken(ctx context.Context, in *Request, out *Response) error
+		SignOff(ctx context.Context, in *Request, out *Response) error
+		SignOn(ctx context.Context, in *Request, out *Response) error
 	}
 	type Auth struct {
 		auth
@@ -106,4 +145,16 @@ func (h *authHandler) CheckCredential(ctx context.Context, in *Request, out *Res
 
 func (h *authHandler) AddLoginCredential(ctx context.Context, in *Request, out *Response) error {
 	return h.AuthHandler.AddLoginCredential(ctx, in, out)
+}
+
+func (h *authHandler) VerifyToken(ctx context.Context, in *Request, out *Response) error {
+	return h.AuthHandler.VerifyToken(ctx, in, out)
+}
+
+func (h *authHandler) SignOff(ctx context.Context, in *Request, out *Response) error {
+	return h.AuthHandler.SignOff(ctx, in, out)
+}
+
+func (h *authHandler) SignOn(ctx context.Context, in *Request, out *Response) error {
+	return h.AuthHandler.SignOn(ctx, in, out)
 }

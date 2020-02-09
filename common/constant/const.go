@@ -2,9 +2,15 @@ package constant
 
 import "time"
 
+// jwt
+const (
+	JwtExpiredTime = 24 * time.Hour
+)
+
 // redis
 const (
 	RedisKey4Log = "arch_log"
+	JwtKeyPrefix = "arch_token_"
 )
 
 // config center
@@ -31,4 +37,7 @@ const (
 
 	AuthSrvCfgName = "srv.auth"
 	AuthApiCfgName = "api.auth"
+
+	MysqlCfgName = "infra.mysql"
+	RedisCfgName = "infra.redis"
 )

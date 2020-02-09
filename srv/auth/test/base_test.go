@@ -11,12 +11,14 @@ import (
 
 var (
 	authModel model.AuthModel
+	jwtSrv model.JwtSrv
 )
 
 func TestMain(m *testing.M) {
 	os.Setenv(constant.CfgCenterAddrEnv, "127.0.0.1:9689")
 	common.Init()
 	authModel = model.NewModel()
+	jwtSrv = model.NewJwtSrv()
 
 	m.Run()
 }

@@ -8,16 +8,24 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 service Auth {
     rpc CheckCredential(Request) returns (Response) {}
     rpc AddLoginCredential(Request) returns (Response) {}
+
+    rpc VerifyToken(Request) returns (Response) {}
+    rpc SignOff(Request) returns (Response) {}
+    rpc SignOn(Request) returns (Response) {}
 }
 
 message Response {
     bool success = 1;
     Error error = 3;
+    string token = 5;
+    bool valid = 7;
+    AuthInfo info = 8 [(gogoproto.jsontag) = "auth_info"];
 }
 
 message Request {
     AuthInfo info = 1 [(gogoproto.jsontag) = "auth_info"];
     bool login = 3;
+    string token = 5;
 }
 
 message Error {

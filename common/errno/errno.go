@@ -1,6 +1,9 @@
 package errno
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+)
 
 type Errno struct {
 	Code    int
@@ -11,8 +14,8 @@ func (e *Errno) Error() string {
 	return e.Message
 }
 
-func (e *Errno) Add(msg string) error {
-	e.Message += " " + msg
+func (e *Errno) Add(format string, v ...interface{}) error {
+	e.Message += ", " + fmt.Sprintf(format, v...)
 	return e
 }
 
@@ -51,4 +54,12 @@ func DecodeInt32Err(err error) (int32, string) {
 	}
 
 	return int32(SystemErr.Code), SystemErr.Message
+}
+
+func GetRespFromErr(err error) gin.H {
+	code, msg := DecodeInt32Err(err)
+	return gin.H{
+		"code": code,
+		"msg": msg,
+	}
 }

@@ -2,13 +2,14 @@ package infra
 
 import (
 	"fmt"
-	"github.com/f1renze/the-architect/common/utils/log"
 	"sync"
 
 	"github.com/micro/go-micro/registry"
 
 	"github.com/f1renze/the-architect/common/config"
 	"github.com/f1renze/the-architect/common/infra/db"
+	"github.com/f1renze/the-architect/common/infra/redis"
+	"github.com/f1renze/the-architect/common/utils/log"
 )
 
 var (
@@ -19,6 +20,7 @@ var (
 func Init(cmsCli config.CMSClient) {
 	once.Do(func() {
 		db.Init(cmsCli)
+		redis.Init(cmsCli)
 
 		etcd = new(EtcdConfig)
 		err := cmsCli.Scan("infra.etcd", etcd)
