@@ -40,6 +40,7 @@ type AuthService interface {
 	VerifyToken(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	SignOff(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	SignOn(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	GenOneTimeToken(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 }
 
 type authService struct {
@@ -110,6 +111,16 @@ func (c *authService) SignOn(ctx context.Context, in *Request, opts ...client.Ca
 	return out, nil
 }
 
+func (c *authService) GenOneTimeToken(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Auth.GenOneTimeToken", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Auth service
 
 type AuthHandler interface {
@@ -118,6 +129,7 @@ type AuthHandler interface {
 	VerifyToken(context.Context, *Request, *Response) error
 	SignOff(context.Context, *Request, *Response) error
 	SignOn(context.Context, *Request, *Response) error
+	GenOneTimeToken(context.Context, *Request, *Response) error
 }
 
 func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.HandlerOption) error {
@@ -127,6 +139,7 @@ func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.Handl
 		VerifyToken(ctx context.Context, in *Request, out *Response) error
 		SignOff(ctx context.Context, in *Request, out *Response) error
 		SignOn(ctx context.Context, in *Request, out *Response) error
+		GenOneTimeToken(ctx context.Context, in *Request, out *Response) error
 	}
 	type Auth struct {
 		auth
@@ -157,4 +170,8 @@ func (h *authHandler) SignOff(ctx context.Context, in *Request, out *Response) e
 
 func (h *authHandler) SignOn(ctx context.Context, in *Request, out *Response) error {
 	return h.AuthHandler.SignOn(ctx, in, out)
+}
+
+func (h *authHandler) GenOneTimeToken(ctx context.Context, in *Request, out *Response) error {
+	return h.AuthHandler.GenOneTimeToken(ctx, in, out)
 }

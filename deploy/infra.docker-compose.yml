@@ -35,26 +35,44 @@ services:
     networks:
       - net
 
-  gateway:
-    depends_on:
-      - config
-      - etcd
-    networks:
-      - net
-    build:
-      context: ../
-      dockerfile: ./infra/gateway/Dockerfile
-    command: /app/main api
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: arch_mq
     environment:
-      MICRO_REGISTRY: etcd
-      MICRO_REGISTRY_ADDRESS: host.docker.internal:2379
-      MICRO_API_NAMESPACE: micro.arch.web
-      MICRO_API_HANDLER: rpc
-      # enable /rpc endpoint when using rpc handler, just for debug
-      MICRO_API_ENABLE_RPC: 'true'
-      ARCH_CONFIG_ADDR: "config:9689"
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
+      RABBITMQ_DEFAULT_USER: "developer"
+      RABBITMQ_DEFAULT_PASS: "developer"
     ports:
-      - "8080:8080"
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      # allowing easy modification to the configuration files
+#      - /tmp/rabbitmq/etc/:/etc/rabbitmq/
+      # allowing easy local access to RabbitMQ data
+      - /tmp/rabbitmq/data/:/var/lib/rabbitmq/
+      # allowing easy local access to RabbitMQ logs
+      - /tmp/rabbitmq/logs/:/var/log/rabbitmq/
+
+#  gateway:
+#    depends_on:
+#      - config
+#      - etcd
+#    networks:
+#      - net
+#    build:
+#      context: ../
+#      dockerfile: ./infra/gateway/Dockerfile
+#    command: /app/main api
+#    environment:
+#      MICRO_REGISTRY: etcd
+#      MICRO_REGISTRY_ADDRESS: host.docker.internal:2379
+#      MICRO_API_NAMESPACE: micro.arch.web
+#      MICRO_API_HANDLER: rpc
+#      # enable /rpc endpoint when using rpc handler, just for debug
+#      MICRO_API_ENABLE_RPC: 'true'
+#      ARCH_CONFIG_ADDR: "config:9689"
+#    ports:
+#      - "8080:8080"
 
 networks:
   net:

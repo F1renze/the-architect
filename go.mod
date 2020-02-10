@@ -18,6 +18,8 @@ require (
 	github.com/micro/go-micro v1.18.0
 	github.com/micro/go-plugins v1.5.1
 	github.com/micro/micro v1.18.0
+	github.com/pquerna/otp v1.2.0
+	github.com/tencentcloud/tencentcloud-sdk-go v3.0.121+incompatible
 	go.uber.org/zap v1.12.0
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	google.golang.org/grpc v1.25.1

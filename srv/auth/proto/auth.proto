@@ -12,6 +12,8 @@ service Auth {
     rpc VerifyToken(Request) returns (Response) {}
     rpc SignOff(Request) returns (Response) {}
     rpc SignOn(Request) returns (Response) {}
+
+    rpc GenOneTimeToken(Request) returns (Response) {}
 }
 
 message Response {
@@ -36,7 +38,8 @@ message Error {
 enum AuthType {
     Email = 0;
     Mobile = 1;
-    Github = 2;
+    UserName = 2;
+    Github = 3;
 }
 
 message AuthInfo {

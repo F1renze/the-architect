@@ -12,5 +12,7 @@ func Default(h handler.UserApi) *gin.Engine {
 	r.POST("/login", h.Login)
 	r.POST("/logout", h.Logout)
 
+	r.POST("/send-sms", h.SendSmsCode)
+
 	return r
 }

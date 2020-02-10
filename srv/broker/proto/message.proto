@@ -1,0 +1,23 @@
+
+syntax = "proto3";
+
+package micro.arch.srv.broker;
+
+
+message BaseMessage {
+    string id = 1;
+    int64 time = 2;
+    string message = 3;
+}
+
+message ConfirmEmail {
+    BaseMessage msg = 1;
+    string username = 2;
+    string authId = 3;
+}
+
+message ConfirmMobile {
+    BaseMessage msg = 1;
+    string oneTimeToken = 2;
+    string mobile = 3;
+}

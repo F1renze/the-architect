@@ -11,6 +11,9 @@ const (
 const (
 	RedisKey4Log = "arch_log"
 	JwtKeyPrefix = "arch_token_"
+
+	SmsCodeKeyPrefix = "arch_sms_"
+	SmsCodeExpiredTime = 5 * time.Minute
 )
 
 // config center
