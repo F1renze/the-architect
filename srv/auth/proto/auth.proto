@@ -13,7 +13,9 @@ service Auth {
     rpc SignOff(Request) returns (Response) {}
     rpc SignOn(Request) returns (Response) {}
 
-    rpc GenOneTimeToken(Request) returns (Response) {}
+//    rpc GenerateOneTimeToken(Request) returns (Response) {}
+    rpc VerifySmsCode(Request) returns (Response) {}
+    rpc CheckAuthIdInUsed(Request) returns (Response) {}
 }
 
 message Response {

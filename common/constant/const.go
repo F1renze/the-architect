@@ -5,6 +5,7 @@ import "time"
 // jwt
 const (
 	JwtExpiredTime = 24 * time.Hour
+	TokenIssuer = "micro.architect"
 )
 
 // redis

@@ -17,6 +17,8 @@ type AuthModel interface {
 	QueryCredential(authId, credential string) (*pb.AuthInfo, error)
 	CreateCredential(authInfo *pb.AuthInfo) (int64, error)
 	RefreshLoginTime(id uint32, ip string) error
+
+	CheckAuthIdInUsed(authId string) (bool, error)
 }
 
 func NewModel() AuthModel {
@@ -100,16 +102,19 @@ func (m *model) CreateCredential(authInfo *pb.AuthInfo) (int64, error) {
 	return id, nil
 }
 
-func (m *model) GetAuthInfoByAuthId(authType pb.AuthType, authId string) (*pb.AuthInfo, error) {
-	if !ValidateAuthId(authType, authId) {
-		return nil, errno.InvalidAuthInfo
-	}
+func (m *model) CheckAuthIdInUsed(authId string) (bool, error) {
 	// get ip addr sql: select id, INET_NTOA(ip_addr) as ip_addr from `user_auth` where id = 1;
-	query := "SELECT id, uid, verified, credential FROM `user_auth` WHERE auth_type = ? AND auth_id = ?"
+	query := "SELECT id, verified FROM `user_auth` WHERE auth_id = ?"
 
 	authInfo := &pb.AuthInfo{}
-	err := m.db.Get(authInfo, query, authType, authId)
-	return authInfo, err
+	err := m.db.Get(authInfo, query, authId)
+
+	if err == sql.ErrNoRows {
+		return false, nil
+	} else if err != nil {
+		return false, errno.DBErr.With(err)
+	}
+	return true, nil
 }
 
 func (m *model) CheckAuthTypeAlreadyBind(uid uint32, authType pb.AuthType) (bool, error) {

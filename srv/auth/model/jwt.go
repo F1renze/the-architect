@@ -21,10 +21,6 @@ type JwtSrv interface {
 	ExpireJwt(uid uint32) error
 }
 
-var (
-	JwtExpiredTime = 24 * time.Hour
-	JwtIssuer      = "the-architect"
-)
 
 type JwtPayload struct {
 	jwt.StandardClaims
@@ -49,8 +45,8 @@ func (s *jwtSrv) getKeyFromUid(uid uint32) string {
 }
 
 func (s *jwtSrv) IsValid(uid uint32, jwtId string) (bool, error) {
-	max := strconv.FormatInt(time.Now().Add(JwtExpiredTime).Unix(), 10)
-	min := strconv.FormatInt(time.Now().Add(-JwtExpiredTime).Unix(), 10)
+	max := strconv.FormatInt(time.Now().Add(constant.JwtExpiredTime).Unix(), 10)
+	min := strconv.FormatInt(time.Now().Add(-constant.JwtExpiredTime).Unix(), 10)
 
 	r, err := s.rCli.ZRangeByScore(s.getKeyFromUid(uid), redis.ZRangeBy{
 		Max: max, Min: min,
@@ -100,7 +96,7 @@ func (s *jwtSrv) ParseJwt(encoded string) (*JwtPayload, error) {
 
 func (s *jwtSrv) NewJwt(uid uint32, authId string) (encoded string, err error) {
 	now := time.Now()
-	expiredTime := now.Add(JwtExpiredTime)
+	expiredTime := now.Add(constant.JwtExpiredTime)
 	claim := JwtPayload{
 		UId:    uid,
 		AuthId: authId,
@@ -108,7 +104,7 @@ func (s *jwtSrv) NewJwt(uid uint32, authId string) (encoded string, err error) {
 			ExpiresAt: expiredTime.Unix(),
 			NotBefore: now.Unix(),
 			Id:        uuid.New().String(),
-			Issuer:    JwtIssuer,
+			Issuer:    constant.TokenIssuer,
 			IssuedAt:  now.Unix(),
 		},
 	}

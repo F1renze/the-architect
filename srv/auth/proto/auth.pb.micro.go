@@ -40,7 +40,9 @@ type AuthService interface {
 	VerifyToken(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	SignOff(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	SignOn(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
-	GenOneTimeToken(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	//    rpc GenerateOneTimeToken(Request) returns (Response) {}
+	VerifySmsCode(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	CheckAuthIdInUsed(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 }
 
 type authService struct {
@@ -111,8 +113,18 @@ func (c *authService) SignOn(ctx context.Context, in *Request, opts ...client.Ca
 	return out, nil
 }
 
-func (c *authService) GenOneTimeToken(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
-	req := c.c.NewRequest(c.name, "Auth.GenOneTimeToken", in)
+func (c *authService) VerifySmsCode(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Auth.VerifySmsCode", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authService) CheckAuthIdInUsed(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "Auth.CheckAuthIdInUsed", in)
 	out := new(Response)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -129,7 +141,9 @@ type AuthHandler interface {
 	VerifyToken(context.Context, *Request, *Response) error
 	SignOff(context.Context, *Request, *Response) error
 	SignOn(context.Context, *Request, *Response) error
-	GenOneTimeToken(context.Context, *Request, *Response) error
+	//    rpc GenerateOneTimeToken(Request) returns (Response) {}
+	VerifySmsCode(context.Context, *Request, *Response) error
+	CheckAuthIdInUsed(context.Context, *Request, *Response) error
 }
 
 func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.HandlerOption) error {
@@ -139,7 +153,8 @@ func RegisterAuthHandler(s server.Server, hdlr AuthHandler, opts ...server.Handl
 		VerifyToken(ctx context.Context, in *Request, out *Response) error
 		SignOff(ctx context.Context, in *Request, out *Response) error
 		SignOn(ctx context.Context, in *Request, out *Response) error
-		GenOneTimeToken(ctx context.Context, in *Request, out *Response) error
+		VerifySmsCode(ctx context.Context, in *Request, out *Response) error
+		CheckAuthIdInUsed(ctx context.Context, in *Request, out *Response) error
 	}
 	type Auth struct {
 		auth
@@ -172,6 +187,10 @@ func (h *authHandler) SignOn(ctx context.Context, in *Request, out *Response) er
 	return h.AuthHandler.SignOn(ctx, in, out)
 }
 
-func (h *authHandler) GenOneTimeToken(ctx context.Context, in *Request, out *Response) error {
-	return h.AuthHandler.GenOneTimeToken(ctx, in, out)
+func (h *authHandler) VerifySmsCode(ctx context.Context, in *Request, out *Response) error {
+	return h.AuthHandler.VerifySmsCode(ctx, in, out)
+}
+
+func (h *authHandler) CheckAuthIdInUsed(ctx context.Context, in *Request, out *Response) error {
+	return h.AuthHandler.CheckAuthIdInUsed(ctx, in, out)
 }

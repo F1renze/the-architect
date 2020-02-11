@@ -1,7 +1,7 @@
 
 syntax = "proto3";
 
-package micro.arch.srv.broker;
+package micro.arch.srv.auth;
 
 
 message BaseMessage {
@@ -18,6 +18,5 @@ message ConfirmEmail {
 
 message ConfirmMobile {
     BaseMessage msg = 1;
-    string oneTimeToken = 2;
     string mobile = 3;
 }

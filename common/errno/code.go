@@ -17,6 +17,7 @@ var (
 	AuthTypeAlreadyBind = newCode(21103, "不支持绑定多个相同登录方式")
 	GeneratePwdErr      = newCode(21104, "不建议使用的密码")
 	InvalidAuthInfo     = newCode(21105, "无效的认证信息")
+	MobileAlreadyUsed   = newCode(21106, "该手机号已被使用")
 
 	// user 相关（含登录注册
 	InvalidUserName     = newCode(21201, "用户名不合法")
@@ -27,10 +28,10 @@ var (
 	PwdNotCorrect = newCode(212301, "用户名或密码不正确")
 
 	// token 相关
-	SignedTokenFailed = newCode(213401, "Token 签名失败")
-	InvalidToken = newCode(213402, "Token 不合法")
+	SignedTokenFailed       = newCode(213401, "Token 签名失败")
+	InvalidToken            = newCode(213402, "Token 不合法")
 	SignatureMethodRejected = newCode(213403, "签名算法不支持")
-	TokenExpired = newCode(213404, "Token 已失效")
+	TokenExpired            = newCode(213404, "Token 已失效")
 
 	// mysql error number
 	MySQLDupEntryErrNo = 1062

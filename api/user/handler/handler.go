@@ -22,7 +22,6 @@ import (
 	"github.com/f1renze/the-architect/common/utils"
 	"github.com/f1renze/the-architect/common/utils/log"
 	authPb "github.com/f1renze/the-architect/srv/auth/proto"
-	msgPb "github.com/f1renze/the-architect/srv/broker/proto"
 	userPb "github.com/f1renze/the-architect/srv/user/proto"
 )
 
@@ -274,8 +273,8 @@ func (h *Handler) Register(c *gin.Context) {
 	}
 
 	go func() {
-		msg := &msgPb.ConfirmEmail{
-			Msg: &msgPb.BaseMessage{
+		msg := &authPb.ConfirmEmail{
+			Msg: &authPb.BaseMessage{
 				Id:      uuid.New().String(),
 				Time:    time.Now().Unix(),
 				Message: "",
@@ -355,18 +354,32 @@ func (h *Handler) SendSmsCode(c *gin.Context) {
 			"msg":  "手机号码不合法",
 		})
 	}
+	ctx := context.TODO()
+	resp, err := h.authCli.CheckAuthIdInUsed(ctx, &authPb.Request{
+		Info: &authPb.AuthInfo{AuthId: form.Mobile},
+	})
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, errno.GetRespFromErr(errno.RemoteServiceErr))
+		log.ErrorF("[api.user.handler::SendSmsCode] call \"srv.auth::CheckAuthIdInUsed\" failed", err)
+		return
+	}
+	if !resp.Success || !resp.Valid {
+		c.AbortWithStatusJSON(http.StatusOK, gin.H{
+			"code": resp.Error.Code,
+			"msg":  resp.Error.Detail,
+		})
+		return
+	}
 
-	msg := &msgPb.ConfirmMobile{
-		Msg: &msgPb.BaseMessage{
+	msg := &authPb.ConfirmMobile{
+		Msg: &authPb.BaseMessage{
 			Id:      uuid.New().String(),
 			Time:    time.Now().Unix(),
-			Message: "",
+			Message: "Send Sms Code",
 		},
-		// todo token rpc
-		OneTimeToken: "899998",
-		Mobile:       form.Mobile,
+		Mobile: form.Mobile,
 	}
-	ctx := context.TODO()
+
 	if err := h.mobilePub.Publish(ctx, msg); err != nil {
 		log.Error("[api.user.handler::SendSmsCode] publish event failed", log.Any{
 			"error": err,

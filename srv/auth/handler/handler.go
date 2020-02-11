@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-
 	"github.com/f1renze/the-architect/common/errno"
 	"github.com/f1renze/the-architect/srv/auth/model"
 	pb "github.com/f1renze/the-architect/srv/auth/proto"
@@ -11,13 +10,13 @@ import (
 func NewHandler() pb.AuthHandler {
 	return &Handler{
 		model: model.NewModel(),
-		jwt: model.NewJwtSrv(),
+		jwt:   model.NewJwtSrv(),
 	}
 }
 
 type Handler struct {
 	model model.AuthModel
-	jwt model.JwtSrv
+	jwt   model.JwtSrv
 }
 
 func (h *Handler) AddLoginCredential(ctx context.Context, req *pb.Request, resp *pb.Response) error {
@@ -99,5 +98,46 @@ func (h *Handler) SignOff(ctx context.Context, req *pb.Request, resp *pb.Respons
 	resp.Success = false
 	resp.Error = new(pb.Error)
 	resp.Error.Code, resp.Error.Detail = errno.DecodeInt32Err(err)
+	return nil
+}
+
+func (h *Handler) VerifySmsCode(ctx context.Context, req *pb.Request, resp *pb.Response) error {
+
+	ok, err := h.otp.ValidateCode(req.Info.AuthId, req.Token)
+	if ok {
+		resp.Success = true
+		resp.Token = req.Token
+		resp.Valid = true
+		return nil
+	}
+	resp.Error = new(pb.Error)
+	resp.Error.Code, resp.Error.Detail = errno.DecodeInt32Err(err)
+
+	if resp.Error.Code == int32(errno.TokenExpired.Code) {
+		resp.Success = true
+	} else {
+		resp.Success = false
+	}
+
+	return nil
+}
+
+func (h *Handler) CheckAuthIdInUsed(ctx context.Context, req *pb.Request, resp *pb.Response) error {
+	ok, err := h.model.CheckAuthIdInUsed(req.Info.AuthId)
+	if err != nil {
+		resp.Success = false
+		resp.Error = new(pb.Error)
+		resp.Error.Code, resp.Error.Detail = errno.DecodeInt32Err(err)
+		return nil
+	}
+	resp.Success = true
+	if ok {
+		resp.Valid = false
+		resp.Error = new(pb.Error)
+		resp.Error.Code, resp.Error.Detail = errno.DecodeInt32Err(errno.MobileAlreadyUsed)
+		return nil
+	}
+	resp.Valid = true
+
 	return nil
 }
