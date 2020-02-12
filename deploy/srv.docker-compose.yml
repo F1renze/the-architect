@@ -12,6 +12,22 @@ services:
     networks:
       - arch_net
 
+  auth:
+    build:
+      context: ../
+      dockerfile: ./srv/auth/Dockerfile
+    container_name: arch_srv_auth
+    environment:
+      ARCHIT_CONFIG_ADDR: "config:9689"
+      TX_CLOUD_SECRET_ID: ${TX_CLOUD_SECRET_ID}
+      TX_CLOUD_SECRET_KEY: ${TX_CLOUD_SECRET_KEY}
+      TX_CLOUD_SMS_SDK_APP_ID: ${TX_CLOUD_SMS_SDK_APP_ID}
+      TX_CLOUD_SIGN: ${TX_CLOUD_SIGN}
+      TX_CLOUD_TEMPLATE_ID: ${TX_CLOUD_TEMPLATE_ID}
+    restart: always
+    networks:
+      - arch_net
+
 
 networks:
   arch_net:

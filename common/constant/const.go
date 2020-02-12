@@ -39,8 +39,8 @@ const (
 	UserSrvCfgName = "srv.user"
 	UserApiCfgName = "api.user"
 
+	CasbinSrvCfgName = "srv.casbin"
 	AuthSrvCfgName = "srv.auth"
-	AuthApiCfgName = "api.auth"
 
 	MysqlCfgName = "infra.mysql"
 	RedisCfgName = "infra.redis"

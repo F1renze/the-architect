@@ -13,6 +13,17 @@ arch:
       db_name: arch_dev
       max_ilde_conn: 100
       max_open_conn: 130
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      db_num: 8
+      password:
+      timeout: 3000
+    rabbitmq:
+      host: 127.0.0.1
+      port: 5672
+      user: developer
+      password: developer
 
   srv:
     user:
@@ -21,3 +32,12 @@ arch:
     auth:
       name: micro.arch.srv.auth
       version: "1.0"
+    casbin:
+      name: micro.arch.srv.casbin
+      version: "1.0"
+
+  api:
+    user:
+      name: micro.arch.api.user
+      version: "1.0"
+      address: ":8010"

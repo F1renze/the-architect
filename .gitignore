@@ -20,3 +20,7 @@
 .idea/
 
 ./common/orm/
+/test/lib_test.go
+/.env
+
+coverage.txt

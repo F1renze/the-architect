@@ -33,6 +33,13 @@ var (
 	SignatureMethodRejected = newCode(213403, "签名算法不支持")
 	TokenExpired            = newCode(213404, "Token 已失效")
 
+	// casbin
+	EnforcerNotFound = newCode(213501, "Enforcer Not Found")
+	AdapterNotFound = newCode(213502, "Adapter Not Found")
+	InvalidModel = newCode(213503, "Invalid casbin model")
+	UnSupportAdapterDriver = newCode(213504, "driver unsupported")
+	CreateAdapterErr = newCode(213505, "create adapter error")
+
 	// mysql error number
 	MySQLDupEntryErrNo = 1062
 )

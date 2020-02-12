@@ -1,11 +1,12 @@
 package user
 
 import (
-	"github.com/f1renze/the-architect/common"
-	"github.com/f1renze/the-architect/common/config"
 	"github.com/f1renze/the-architect/common/constant"
 	"os"
 	"testing"
+
+	"github.com/f1renze/the-architect/common"
+	"github.com/f1renze/the-architect/common/config"
 )
 
 var (

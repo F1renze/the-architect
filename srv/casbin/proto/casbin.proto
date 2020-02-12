@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package micro.arch.srv.casbin;
+
+
+service Casbin {
+    rpc NewEnforcer (NewEnforcerRequest) returns (NewEnforcerReply) {
+    }
+    rpc NewAdapter (NewAdapterRequest) returns (NewAdapterReply) {
+    }
+
+    rpc Enforce (EnforceRequest) returns (EmptyReply) {
+    }
+
+    rpc LoadPolicy (EmptyRequest) returns (EmptyReply) {
+    }
+    rpc SavePolicy (EmptyRequest) returns (EmptyReply) {
+    }
+
+    rpc GetRolesForUser (UserRoleRequest) returns (ArrayReply) {
+    }
+    rpc GetImplicitRolesForUser (UserRoleRequest) returns (ArrayReply) {
+    }
+    rpc GetUsersForRole (UserRoleRequest) returns (ArrayReply) {
+    }
+
+    rpc HasRoleForUser (UserRoleRequest) returns (EmptyReply) {
+    }
+    rpc AddRoleForUser (UserRoleRequest) returns (EmptyReply) {
+    }
+    // DeleteRoleForUser deletes a role for a user.
+    // Returns false if the user does not have the role (aka not affected).
+    rpc DeleteRoleForUser (UserRoleRequest) returns (EmptyReply) {
+    }
+    // DeleteRolesForUser deletes all roles for a user.
+    // Returns false if the user does not have any roles (aka not affected).
+    rpc DeleteRolesForUser (UserRoleRequest) returns (EmptyReply) {
+    }
+
+    rpc DeleteRole (UserRoleRequest) returns (EmptyReply) {
+    }
+}
+
+message NewEnforcerRequest {
+    string modelText = 1;
+    int32 adapterHandle = 2;
+}
+
+message NewEnforcerReply {
+    int32 handler = 1;
+}
+
+message NewAdapterRequest {
+    string adapterName = 1;
+    string driverName = 2;
+    string connectString = 3;
+    bool dbSpecified = 4;
+}
+
+message NewAdapterReply {
+    int32 handler = 1;
+}
+
+message EnforceRequest {
+    int32 enforcerHandler = 1;
+    repeated string params = 2;
+}
+
+message UserRoleRequest {
+    int32 enforcerHandler = 1;
+    string user = 2;
+    string role = 3;
+}
+
+message EmptyRequest {
+    int32 handler = 1;
+}
+
+message EmptyReply {
+    bool success = 1;
+}
+
+message ArrayReply {
+    repeated string array = 1;
+}

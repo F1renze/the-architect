@@ -1,4 +1,3 @@
-
 syntax = "proto3";
 
 package micro.arch.srv.auth;
@@ -6,16 +5,24 @@ package micro.arch.srv.auth;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 service Auth {
-    rpc CheckCredential(Request) returns (Response) {}
-    rpc AddLoginCredential(Request) returns (Response) {}
+    rpc CheckCredential (Request) returns (Response) {
+    }
+    // todo add multiple auth record
+    rpc AddLoginCredential (Request) returns (Response) {
+    }
 
-    rpc VerifyToken(Request) returns (Response) {}
-    rpc SignOff(Request) returns (Response) {}
-    rpc SignOn(Request) returns (Response) {}
+    rpc VerifyToken (Request) returns (Response) {
+    }
+    rpc SignOff (Request) returns (Response) {
+    }
+    rpc SignOn (Request) returns (Response) {
+    }
 
-//    rpc GenerateOneTimeToken(Request) returns (Response) {}
-    rpc VerifySmsCode(Request) returns (Response) {}
-    rpc CheckAuthIdInUsed(Request) returns (Response) {}
+    //    rpc GenerateOneTimeToken(Request) returns (Response) {}
+    rpc VerifySmsCode (Request) returns (Response) {
+    }
+    rpc CheckAuthIdInUsed (Request) returns (Response) {
+    }
 }
 
 message Response {

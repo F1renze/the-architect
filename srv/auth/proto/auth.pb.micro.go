@@ -36,6 +36,7 @@ var _ server.Option
 
 type AuthService interface {
 	CheckCredential(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	// todo add multiple auth record
 	AddLoginCredential(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	VerifyToken(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
 	SignOff(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
@@ -137,6 +138,7 @@ func (c *authService) CheckAuthIdInUsed(ctx context.Context, in *Request, opts .
 
 type AuthHandler interface {
 	CheckCredential(context.Context, *Request, *Response) error
+	// todo add multiple auth record
 	AddLoginCredential(context.Context, *Request, *Response) error
 	VerifyToken(context.Context, *Request, *Response) error
 	SignOff(context.Context, *Request, *Response) error

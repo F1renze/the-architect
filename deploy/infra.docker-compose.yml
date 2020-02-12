@@ -52,27 +52,29 @@ services:
       - /tmp/rabbitmq/data/:/var/lib/rabbitmq/
       # allowing easy local access to RabbitMQ logs
       - /tmp/rabbitmq/logs/:/var/log/rabbitmq/
+    networks:
+      - net
 
-#  gateway:
-#    depends_on:
-#      - config
-#      - etcd
-#    networks:
-#      - net
-#    build:
-#      context: ../
-#      dockerfile: ./infra/gateway/Dockerfile
-#    command: /app/main api
-#    environment:
-#      MICRO_REGISTRY: etcd
-#      MICRO_REGISTRY_ADDRESS: host.docker.internal:2379
-#      MICRO_API_NAMESPACE: micro.arch.web
-#      MICRO_API_HANDLER: rpc
-#      # enable /rpc endpoint when using rpc handler, just for debug
-#      MICRO_API_ENABLE_RPC: 'true'
-#      ARCH_CONFIG_ADDR: "config:9689"
-#    ports:
-#      - "8080:8080"
+  gateway:
+    depends_on:
+      - config
+      - etcd
+    networks:
+      - net
+    build:
+      context: ../
+      dockerfile: ./infra/gateway/Dockerfile
+    command: /app/main api
+    environment:
+      MICRO_REGISTRY: etcd
+      MICRO_REGISTRY_ADDRESS: host.docker.internal:2379
+      MICRO_API_NAMESPACE: micro.arch.web
+      MICRO_API_HANDLER: rpc
+      # enable /rpc endpoint when using rpc handler, just for debug
+      MICRO_API_ENABLE_RPC: 'true'
+      ARCH_CONFIG_ADDR: "config:9689"
+    ports:
+      - "8080:8080"
 
 networks:
   net:
