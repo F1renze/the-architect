@@ -27,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - name: pre install dependency
+        run: go env -w GOPROXY=https://goproxy.cn,direct; go get -t -v ./...
       - name: generate coverage file
         run: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
       - name: Upload coverage to Codecov
