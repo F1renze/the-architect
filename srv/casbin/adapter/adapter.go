@@ -2,6 +2,7 @@ package adapter
 
 import (
 	"github.com/casbin/casbin/v2/persist"
+	fileadapter "github.com/casbin/casbin/v2/persist/file-adapter"
 	"github.com/casbin/gorm-adapter/v2"
 	//_ "github.com/jinzhu/gorm/dialects/mssql"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -25,6 +26,9 @@ func NewAdapter(in *pb.NewAdapterRequest) (persist.Adapter, error) {
 	}
 	if !support {
 		return nil, errno.UnSupportAdapterDriver
+	}
+	if in.DriverName == "file" {
+		return fileadapter.NewAdapter(in.ConnectString), nil
 	}
 
 	a, err := gormadapter.NewAdapter(in.DriverName, in.ConnectString, in.DbSpecified)

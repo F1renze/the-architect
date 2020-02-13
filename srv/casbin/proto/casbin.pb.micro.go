@@ -39,6 +39,10 @@ type CasbinService interface {
 	Enforce(ctx context.Context, in *EnforceRequest, opts ...client.CallOption) (*EmptyReply, error)
 	LoadPolicy(ctx context.Context, in *EmptyRequest, opts ...client.CallOption) (*EmptyReply, error)
 	SavePolicy(ctx context.Context, in *EmptyRequest, opts ...client.CallOption) (*EmptyReply, error)
+	AddPolicy(ctx context.Context, in *PolicyRequest, opts ...client.CallOption) (*EmptyReply, error)
+	AddNamedPolicy(ctx context.Context, in *PolicyRequest, opts ...client.CallOption) (*EmptyReply, error)
+	AddGroupingPolicy(ctx context.Context, in *PolicyRequest, opts ...client.CallOption) (*EmptyReply, error)
+	AddNamedGroupingPolicy(ctx context.Context, in *PolicyRequest, opts ...client.CallOption) (*EmptyReply, error)
 	GetRolesForUser(ctx context.Context, in *UserRoleRequest, opts ...client.CallOption) (*ArrayReply, error)
 	GetImplicitRolesForUser(ctx context.Context, in *UserRoleRequest, opts ...client.CallOption) (*ArrayReply, error)
 	GetUsersForRole(ctx context.Context, in *UserRoleRequest, opts ...client.CallOption) (*ArrayReply, error)
@@ -113,6 +117,46 @@ func (c *casbinService) LoadPolicy(ctx context.Context, in *EmptyRequest, opts .
 
 func (c *casbinService) SavePolicy(ctx context.Context, in *EmptyRequest, opts ...client.CallOption) (*EmptyReply, error) {
 	req := c.c.NewRequest(c.name, "Casbin.SavePolicy", in)
+	out := new(EmptyReply)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *casbinService) AddPolicy(ctx context.Context, in *PolicyRequest, opts ...client.CallOption) (*EmptyReply, error) {
+	req := c.c.NewRequest(c.name, "Casbin.AddPolicy", in)
+	out := new(EmptyReply)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *casbinService) AddNamedPolicy(ctx context.Context, in *PolicyRequest, opts ...client.CallOption) (*EmptyReply, error) {
+	req := c.c.NewRequest(c.name, "Casbin.AddNamedPolicy", in)
+	out := new(EmptyReply)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *casbinService) AddGroupingPolicy(ctx context.Context, in *PolicyRequest, opts ...client.CallOption) (*EmptyReply, error) {
+	req := c.c.NewRequest(c.name, "Casbin.AddGroupingPolicy", in)
+	out := new(EmptyReply)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *casbinService) AddNamedGroupingPolicy(ctx context.Context, in *PolicyRequest, opts ...client.CallOption) (*EmptyReply, error) {
+	req := c.c.NewRequest(c.name, "Casbin.AddNamedGroupingPolicy", in)
 	out := new(EmptyReply)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -209,6 +253,10 @@ type CasbinHandler interface {
 	Enforce(context.Context, *EnforceRequest, *EmptyReply) error
 	LoadPolicy(context.Context, *EmptyRequest, *EmptyReply) error
 	SavePolicy(context.Context, *EmptyRequest, *EmptyReply) error
+	AddPolicy(context.Context, *PolicyRequest, *EmptyReply) error
+	AddNamedPolicy(context.Context, *PolicyRequest, *EmptyReply) error
+	AddGroupingPolicy(context.Context, *PolicyRequest, *EmptyReply) error
+	AddNamedGroupingPolicy(context.Context, *PolicyRequest, *EmptyReply) error
 	GetRolesForUser(context.Context, *UserRoleRequest, *ArrayReply) error
 	GetImplicitRolesForUser(context.Context, *UserRoleRequest, *ArrayReply) error
 	GetUsersForRole(context.Context, *UserRoleRequest, *ArrayReply) error
@@ -230,6 +278,10 @@ func RegisterCasbinHandler(s server.Server, hdlr CasbinHandler, opts ...server.H
 		Enforce(ctx context.Context, in *EnforceRequest, out *EmptyReply) error
 		LoadPolicy(ctx context.Context, in *EmptyRequest, out *EmptyReply) error
 		SavePolicy(ctx context.Context, in *EmptyRequest, out *EmptyReply) error
+		AddPolicy(ctx context.Context, in *PolicyRequest, out *EmptyReply) error
+		AddNamedPolicy(ctx context.Context, in *PolicyRequest, out *EmptyReply) error
+		AddGroupingPolicy(ctx context.Context, in *PolicyRequest, out *EmptyReply) error
+		AddNamedGroupingPolicy(ctx context.Context, in *PolicyRequest, out *EmptyReply) error
 		GetRolesForUser(ctx context.Context, in *UserRoleRequest, out *ArrayReply) error
 		GetImplicitRolesForUser(ctx context.Context, in *UserRoleRequest, out *ArrayReply) error
 		GetUsersForRole(ctx context.Context, in *UserRoleRequest, out *ArrayReply) error
@@ -268,6 +320,22 @@ func (h *casbinHandler) LoadPolicy(ctx context.Context, in *EmptyRequest, out *E
 
 func (h *casbinHandler) SavePolicy(ctx context.Context, in *EmptyRequest, out *EmptyReply) error {
 	return h.CasbinHandler.SavePolicy(ctx, in, out)
+}
+
+func (h *casbinHandler) AddPolicy(ctx context.Context, in *PolicyRequest, out *EmptyReply) error {
+	return h.CasbinHandler.AddPolicy(ctx, in, out)
+}
+
+func (h *casbinHandler) AddNamedPolicy(ctx context.Context, in *PolicyRequest, out *EmptyReply) error {
+	return h.CasbinHandler.AddNamedPolicy(ctx, in, out)
+}
+
+func (h *casbinHandler) AddGroupingPolicy(ctx context.Context, in *PolicyRequest, out *EmptyReply) error {
+	return h.CasbinHandler.AddGroupingPolicy(ctx, in, out)
+}
+
+func (h *casbinHandler) AddNamedGroupingPolicy(ctx context.Context, in *PolicyRequest, out *EmptyReply) error {
+	return h.CasbinHandler.AddNamedGroupingPolicy(ctx, in, out)
 }
 
 func (h *casbinHandler) GetRolesForUser(ctx context.Context, in *UserRoleRequest, out *ArrayReply) error {

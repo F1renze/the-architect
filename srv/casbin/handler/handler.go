@@ -58,65 +58,63 @@ func (h *Handler) NewEnforcer(ctx context.Context, req *pb.NewEnforcerRequest, r
 		var err error
 		a, err = h.getAdapter(int(req.AdapterHandle))
 		if err != nil {
-			resp = &pb.NewEnforcerReply{Handler: -1}
+			resp.Handler = -1
 			return err
 		}
 	}
 
 	if req.ModelText == "" {
-		resp = &pb.NewEnforcerReply{Handler: -1}
+		resp.Handler = -1
 		return errno.InvalidModel.Add("model must not empty")
 	}
 
 	if a == nil {
 		m, err := model.NewModelFromString(req.ModelText)
 		if err != nil {
-			resp = &pb.NewEnforcerReply{Handler: -1}
+			resp.Handler = -1
 			return errno.InvalidModel.With(err)
 		}
 
 		e, err = casbin.NewEnforcer(m)
 		if err != nil {
-			resp = &pb.NewEnforcerReply{Handler: -1}
+			resp.Handler = -1
 			return errno.InvalidModel.With(err)
 		}
 	} else {
 		m, err := model.NewModelFromString(req.ModelText)
 		if err != nil {
-			resp = &pb.NewEnforcerReply{Handler: -1}
+			resp.Handler = -1
 			return errno.InvalidModel.With(err)
 		}
 
 		e, err = casbin.NewEnforcer(m, a)
 		if err != nil {
-			resp = &pb.NewEnforcerReply{Handler: -1}
+			resp.Handler = -1
 			return errno.InvalidModel.With(err)
 		}
 	}
 	n := h.addEnforcer(e)
 
-	resp = &pb.NewEnforcerReply{Handler: int32(n)}
+	resp.Handler = int32(n)
 	return nil
 }
 
 func (h *Handler) NewAdapter(ctx context.Context, req *pb.NewAdapterRequest, resp *pb.NewAdapterReply) error {
 	a, err := adapter.NewAdapter(req)
 	if err != nil {
-		resp = &pb.NewAdapterReply{Handler: -1}
+		resp.Handler = -1
 		return err
 	}
 
 	n := h.addAdapter(a)
-	resp = &pb.NewAdapterReply{Handler:int32(n)}
+	resp.Handler = int32(n)
 	return nil
 }
 
 func (h *Handler) Enforce(ctx context.Context, req *pb.EnforceRequest, resp *pb.EmptyReply) error {
 	e, err := h.getEnforcer(int(req.EnforcerHandler))
 	if err != nil {
-		resp = &pb.EmptyReply{
-			Success: false,
-		}
+		resp.Success = false
 		return err
 	}
 	var param interface{}
@@ -127,30 +125,23 @@ func (h *Handler) Enforce(ctx context.Context, req *pb.EnforceRequest, resp *pb.
 		param, m = parseParam(req.Params[index], m)
 		params = append(params, param)
 	}
+	//e.EnableLog(true)
 
 	res, err := e.EnforceWithMatcher(m, params...)
-	if err != nil {
-		resp = &pb.EmptyReply{
-			Success: false,
-		}
-		return err
-	}
-	resp = &pb.EmptyReply{
-		Success: res,
-	}
-	return nil
+	resp.Success = res
+	return err
 }
 
 // todo complete error code
 func (h *Handler) LoadPolicy(ctx context.Context, req *pb.EmptyRequest, resp *pb.EmptyReply) error {
 	e, err := h.getEnforcer(int(req.Handler))
 	if err != nil {
-		resp = &pb.EmptyReply{Success:false}
+		resp = &pb.EmptyReply{Success: false}
 		return err
 	}
 
 	err = e.LoadPolicy()
-	resp = &pb.EmptyReply{Success:true}
+	resp = &pb.EmptyReply{Success: true}
 	if err != nil {
 		resp.Success = false
 	}
@@ -161,12 +152,12 @@ func (h *Handler) LoadPolicy(ctx context.Context, req *pb.EmptyRequest, resp *pb
 func (h *Handler) SavePolicy(ctx context.Context, req *pb.EmptyRequest, resp *pb.EmptyReply) error {
 	e, err := h.getEnforcer(int(req.Handler))
 	if err != nil {
-		resp = &pb.EmptyReply{Success:false}
+		resp = &pb.EmptyReply{Success: false}
 		return err
 	}
 
 	err = e.SavePolicy()
-	resp = &pb.EmptyReply{Success:true}
+	resp = &pb.EmptyReply{Success: true}
 	if err != nil {
 		resp.Success = false
 	}

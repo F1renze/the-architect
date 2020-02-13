@@ -19,6 +19,10 @@ type mysqlConfig struct {
 	MaxOpenConn int    `json:"max_open_conn"`
 }
 
+func GetMysqlUrl() string {
+	return dbUrl
+}
+
 func initMysql(cmsCli config.CMSClient) {
 	cfg := &mysqlConfig{}
 	err := cmsCli.Scan("infra.mysql", cfg)
@@ -29,6 +33,7 @@ func initMysql(cmsCli config.CMSClient) {
 	url := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=%t&loc=%s",
 		cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DBName, true, "Local",
 	)
+	dbUrl = url
 	log.DebugF("url: %s", url)
 
 	// 创建连接

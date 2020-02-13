@@ -4,41 +4,34 @@ package micro.arch.srv.casbin;
 
 
 service Casbin {
-    rpc NewEnforcer (NewEnforcerRequest) returns (NewEnforcerReply) {
-    }
-    rpc NewAdapter (NewAdapterRequest) returns (NewAdapterReply) {
-    }
+    rpc NewEnforcer (NewEnforcerRequest) returns (NewEnforcerReply) {}
+    rpc NewAdapter (NewAdapterRequest) returns (NewAdapterReply) {}
 
-    rpc Enforce (EnforceRequest) returns (EmptyReply) {
-    }
+    rpc Enforce (EnforceRequest) returns (EmptyReply) {}
 
-    rpc LoadPolicy (EmptyRequest) returns (EmptyReply) {
-    }
-    rpc SavePolicy (EmptyRequest) returns (EmptyReply) {
-    }
+    rpc LoadPolicy (EmptyRequest) returns (EmptyReply) {}
+    rpc SavePolicy (EmptyRequest) returns (EmptyReply) {}
 
-    rpc GetRolesForUser (UserRoleRequest) returns (ArrayReply) {
-    }
-    rpc GetImplicitRolesForUser (UserRoleRequest) returns (ArrayReply) {
-    }
-    rpc GetUsersForRole (UserRoleRequest) returns (ArrayReply) {
-    }
+    rpc AddPolicy (PolicyRequest) returns (EmptyReply) {}
+    rpc AddNamedPolicy (PolicyRequest) returns (EmptyReply) {}
 
-    rpc HasRoleForUser (UserRoleRequest) returns (EmptyReply) {
-    }
-    rpc AddRoleForUser (UserRoleRequest) returns (EmptyReply) {
-    }
+    rpc AddGroupingPolicy (PolicyRequest) returns (EmptyReply) {}
+    rpc AddNamedGroupingPolicy (PolicyRequest) returns (EmptyReply) {}
+
+    rpc GetRolesForUser (UserRoleRequest) returns (ArrayReply) {}
+    rpc GetImplicitRolesForUser (UserRoleRequest) returns (ArrayReply) {}
+    rpc GetUsersForRole (UserRoleRequest) returns (ArrayReply) {}
+
+    rpc HasRoleForUser (UserRoleRequest) returns (EmptyReply) {}
+    rpc AddRoleForUser (UserRoleRequest) returns (EmptyReply) {}
     // DeleteRoleForUser deletes a role for a user.
     // Returns false if the user does not have the role (aka not affected).
-    rpc DeleteRoleForUser (UserRoleRequest) returns (EmptyReply) {
-    }
+    rpc DeleteRoleForUser (UserRoleRequest) returns (EmptyReply) {}
     // DeleteRolesForUser deletes all roles for a user.
     // Returns false if the user does not have any roles (aka not affected).
-    rpc DeleteRolesForUser (UserRoleRequest) returns (EmptyReply) {
-    }
+    rpc DeleteRolesForUser (UserRoleRequest) returns (EmptyReply) {}
 
-    rpc DeleteRole (UserRoleRequest) returns (EmptyReply) {
-    }
+    rpc DeleteRole (UserRoleRequest) returns (EmptyReply) {}
 }
 
 message NewEnforcerRequest {
@@ -59,6 +52,12 @@ message NewAdapterRequest {
 
 message NewAdapterReply {
     int32 handler = 1;
+}
+
+message PolicyRequest {
+    int32 enforcerHandler = 1;
+    string pType = 2;
+    repeated string params = 3;
 }
 
 message EnforceRequest {

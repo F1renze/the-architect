@@ -10,6 +10,7 @@ import (
 
 var (
 	db   *sqlx.DB
+	dbUrl string
 	once sync.Once
 )
 
